@@ -3,6 +3,55 @@
 
 <head>
     <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .success-message {
+            text-align: center;
+            color: #4caf50;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #f44336;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -12,6 +61,7 @@
         <input type="file" name="uploadedFile" />
         <input type="submit" value="Upload" />
     </form>
+
     <?php
     // Enable error reporting
     error_reporting(E_ALL);
@@ -46,7 +96,7 @@
             // Upload the file to Azure Blob Storage
             $blobClient->createBlockBlob($containerName, $fileName, fopen($file['tmp_name'], 'r'));
 
-            echo 'File uploaded successfully!';
+            echo '<p class="success-message">File uploaded successfully!</p>';
 
             // Send a POST request to the Flask server with the file path
             $flaskServerUrl = 'https://10.1.0.4:8000/embed';
@@ -60,12 +110,10 @@
         } catch (ServiceException $e) {
             $code = $e->getCode();
             $error_message = $e->getMessage();
-            echo "Failed to upload the file. Error message: $error_message";
+            echo "<p class='error-message'>Failed to upload the file. Error message: $error_message</p>";
         }
     }
-
     ?>
-    
 
 </body>
 
