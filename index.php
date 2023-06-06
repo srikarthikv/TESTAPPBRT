@@ -53,7 +53,7 @@
 
         .error-message {
             text-align: center;
-            color: #f44336;
+            color: #3f51b5;
             margin-top: 10px;
         }
     </style>
