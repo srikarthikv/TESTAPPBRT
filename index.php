@@ -47,14 +47,16 @@
 
         .success-message {
             text-align: center;
-            color: #4caf50;
+            color: #ffffff;
             margin-top: 10px;
+            font-weight: bold;
         }
 
         .error-message {
             text-align: center;
-            color: #3f51b5;
+            color: #ffffff;
             margin-top: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
