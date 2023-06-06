@@ -6,12 +6,17 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
+            background-color: #2196f3;
+            margin: 0;
+            padding: 0;
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #fff;
+            font-weight: bold;
+            padding: 20px;
+            margin: 0;
         }
 
         form {
@@ -55,7 +60,7 @@
 </head>
 
 <body>
-    <h1>Upload a File</h1>
+    <h1>BRTGPT</h1>
 
     <form action="" method="POST" enctype="multipart/form-data">
         <input type="file" name="uploadedFile" />
@@ -110,11 +115,13 @@
         } catch (ServiceException $e) {
             $code = $e->getCode();
             $error_message = $e->getMessage();
-            echo "<p class='error-message'>Failed to upload the file. Error message: $error_message</p>";
+            echo '<p class="error-message">Failed to upload the file. Error message: ' . $error_message . '</p>';
         }
     }
+
     ?>
 
 </body>
 
 </html>
+
