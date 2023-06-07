@@ -1,129 +1,54 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>File Upload</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #2196f3;
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            text-align: center;
-            color: #fff;
-            font-weight: bold;
-            padding: 20px;
-            margin: 0;
-        }
-
-        form {
-            max-width: 400px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="file"] {
-            margin-bottom: 10px;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .success-message {
-            text-align: center;
-            color: #ffffff;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        .error-message {
-            text-align: center;
-            color: #ffffff;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-    </style>
+    <title>PHP Web App</title>
 </head>
-
 <body>
-    <h1>BRTGPT</h1>
-
-    <form action="" method="POST" enctype="multipart/form-data">
-        <input type="file" name="uploadedFile" />
-        <input type="submit" value="Upload" />
-    </form>
+    <h1>Hello, PHP!</h1>
+    <p>This is a PHP web app that sends a POST request.</p>
 
     <?php
-    // Enable error reporting
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Retrieve the question from the form
+        $question = $_POST['question'];
 
-    // Required Azure Blob Storage libraries
-    require_once 'vendor/autoload.php';
+        // Set the request URL
+        $url = 'http://10.1.0.4:8000/qanda';
 
-    use MicrosoftAzure\Storage\Blob\BlobRestProxy;
-    use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
-    use MicrosoftAzure\Storage\Blob\Models\Blob;
-    use MicrosoftAzure\Storage\Blob\Models\CreateBlockBlobOptions;
+        // Set the request data
+        $data = array(
+            'question' => $question,
+        );
 
-    // Azure Blob Storage connection string
-    $connectionString = 'DefaultEndpointsProtocol=https;AccountName=gptdemo7020140432;AccountKey=k3z0/JCQH3yV/9iSceGe+s1dtdIUbp8anSUQ/a0sDsrw34tuFHfd7usPn42bCvjaUdzlfpNvA09O+AStCRDO3w==;EndpointSuffix=core.windows.net';
-    $directoryName = 'documents/';
+        // Initialize cURL session
+        $ch = curl_init();
 
-    // Create a BlobRestProxy instance
-    $blobClient = BlobRestProxy::createBlobService($connectionString);
+        // Set cURL options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 
-    // Check if a file is uploaded
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploadedFile'])) {
-        $file = $_FILES['uploadedFile'];
+        // Execute the request
+        $response = curl_exec($ch);
 
-        // Generate a unique name for the file
-        $fileName = $directoryName . $file['name'];
-
-        // Set the container name where the file will be stored
-        $containerName = 'azureml-blobstore-fa29c537-9f94-4f15-8679-5f1e2fd597e4';
-
-        try {
-            // Upload the file to Azure Blob Storage
-            $blobClient->createBlockBlob($containerName, $fileName, fopen($file['tmp_name'], 'r'));
-
-            echo '<p class="success-message">File uploaded successfully!</p>';
-
-            // Send a POST request to the Flask server with the file path
-            $flaskServerUrl = 'https://10.1.0.4:8000/embed';
-            $postData = array('file_path' => $fileName);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $flaskServerUrl);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-            curl_exec($ch);
-            curl_close($ch);
-        } catch (ServiceException $e) {
-            $code = $e->getCode();
-            $error_message = $e->getMessage();
-            echo '<p class="error-message">Failed to upload the file. Error message: ' . $error_message . '</p>';
+        // Check for errors
+        if (curl_errno($ch)) {
+            echo 'Error: ' . curl_error($ch);
+        } else {
+            // Output the response
+            echo $response;
         }
-    }
 
+        // Close cURL session
+        curl_close($ch);
+    }
     ?>
 
+    <form action="" method="POST">
+        <label for="question">Question:</label>
+        <input type="text" name="question" id="question" required><br>
+
+        <button type="submit">Submit</button>
+    </form>
 </body>
-
 </html>
-
